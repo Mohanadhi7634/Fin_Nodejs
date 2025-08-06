@@ -25,9 +25,9 @@ const DebtorSchema = new mongoose.Schema(
     address: { type: String, required: true },
     mobile: { type: String, required: true },
     photo: {
-      data: { type: String },
-      name: { type: String },
-    },
+  url: { type: String },
+  name: { type: String }
+},
     debtAmount: { type: Number, required: true },
     debtDate: { type: String, required: true },
     remainingBalance: {
@@ -39,18 +39,18 @@ const DebtorSchema = new mongoose.Schema(
     currentDate: { type: String, required: true },
     interestRate: { type: Number, required: true },
     interestAmount: { type: Number, required: true },
-    bondPapers: [
-      {
-        data: { type: String },
-        name: { type: String },
-      }
-    ],
-    checkLeaves: [
-      {
-        data: { type: String },
-        name: { type: String },
-      }
-    ],
+bondPapers: [
+  {
+    url: { type: String },
+    name: { type: String }
+  }
+],
+checkLeaves: [
+  {
+    url: { type: String },
+    name: { type: String }
+  }
+],
     interestPaidMonths: [InterestPaidSchema],
     paymentHistory: [PaymentHistorySchema],
   },

@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 // app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 
 // ✅ Connect to MongoDB
-mongoose
+
   mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
