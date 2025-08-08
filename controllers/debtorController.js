@@ -3,6 +3,20 @@ const Debtor = require("../models/Debtor");
 const cloudinary = require("../utils/cloudinary");
 
 // ✅ Get All Debtors
+exports.getDebtors = async (req, res) => {
+  try {
+    const debtors = await Debtor.find();
+    console.log("Fetched debtors count:", debtors.length);
+    res.status(200).json(debtors);
+  } catch (error) {
+    console.error("❌ Error fetching debtors:", error.message);
+    res.status(500).json({ message: "Error fetching debtors", error });
+  }
+};
+
+
+
+// ✅ Add Debtor
 exports.addDebtor = async (req, res) => {
   try {
     const {
@@ -101,96 +115,6 @@ exports.addDebtor = async (req, res) => {
 
     await newDebtor.save();
     res.status(201).json({ message: "Debtor added successfully", debtor: newDebtor });
-  } catch (error) {
-    console.error("Error uploading to Cloudinary:", error);
-    res.status(500).json({ error: error.message });
-  }
-};
-
-
-
-
-// ✅ Add Debtor
-exports.addDebtor = async (req, res) => {
-  try {
-    const { id, name, address, mobile, debtAmount, debtDate, interestRate, currentDate } = req.body;
-
-    const interestAmount = ((parseFloat(interestRate) / 100) * parseFloat(debtAmount)).toFixed(2);
-
-    const existingDebtor = await Debtor.findOne({ id });
-    if (existingDebtor) {
-      return res.status(400).json({ message: "Debtor ID already exists." });
-    }
-
-    const mobileRegex = /^[6-9]\d{9}$/;
-    if (!mobileRegex.test(mobile)) {
-      return res.status(400).json({ message: "Invalid mobile number" });
-    }
-
-const photoData = req.files?.photo?.[0]
-  ? await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        { folder: "debtors" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve({
-            url: result.secure_url,
-            name: result.original_filename,
-          });
-        }
-      ).end(req.files.photo[0].buffer);
-    })
-  : null;
-
-
-const bondPaperUrls = req.files?.bondPapers
-  ? await Promise.all(req.files.bondPapers.map(file =>
-      new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          { folder: "bondPapers" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve({ url: result.secure_url, name: result.original_filename });
-          }
-        ).end(file.buffer);
-      })
-    ))
-  : [];
-
-const checkLeavesUrls = req.files?.checkLeaves
-  ? await Promise.all(req.files.checkLeaves.map(file =>
-      new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          { folder: "checkLeaves" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve({ url: result.secure_url, name: result.original_filename });
-          }
-        ).end(file.buffer);
-      })
-    ))
-  : [];
-
-const newDebtor = new Debtor({
-  id,
-  name,
-  address,
-  mobile,
- photo: photoData,
-  debtAmount,
-  debtDate,
-  interestRate,
-  interestAmount,
-  currentDate,
-  bondPapers: bondPaperUrls, // ✅ Already in { url, name }
-  checkLeaves: checkLeavesUrls,
-  interestPaidMonths: [],
-});
-
-
-    await newDebtor.save();
-    res.status(201).json({ message: "Debtor added successfully", debtor: newDebtor });
-
   } catch (error) {
     console.error("Error uploading to Cloudinary:", error);
     res.status(500).json({ error: error.message });
