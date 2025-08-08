@@ -122,12 +122,11 @@ exports.addDebtor = async (req, res) => {
 };
 
 
-
-//edit 
+//edit
 exports.updateDebtor = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, address, mobile, debtAmount, debtDate, interestRate, currentDate } = req.body;
+    const { name, address, mobile, debtAmount, debtDate, interestRate, currentDate, comment } = req.body;
 
     const debtor = await Debtor.findById(id);
     if (!debtor) return res.status(404).json({ message: "Debtor not found" });
@@ -159,6 +158,11 @@ exports.updateDebtor = async (req, res) => {
     if (debtAmount) {
       const principalPaid = debtor.principalPaid || 0;
       debtor.remainingBalance = parseFloat(debtAmount) - parseFloat(principalPaid);
+    }
+
+    // ✅ Update comment
+    if (comment !== undefined) {
+      debtor.comment = comment;
     }
 
     // ✅ Upload Helpers
@@ -207,6 +211,7 @@ exports.updateDebtor = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 
