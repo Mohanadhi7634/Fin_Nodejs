@@ -51,6 +51,7 @@ checkLeaves: [
     name: { type: String }
   }
 ],
+ comment: { type: String, default: "" },
     interestPaidMonths: [InterestPaidSchema],
     paymentHistory: [PaymentHistorySchema],
   },
