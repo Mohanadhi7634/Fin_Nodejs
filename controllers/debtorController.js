@@ -220,23 +220,19 @@ exports.updateDebtor = async (req, res) => {
 // ✅ Pay Interest
 // Controller in userController.js
 exports.payInterest = async (req, res) => {
-  console.log("➡️ /pay-interest endpoint hit", req.body); 
+   console.log("➡️ /pay-interest endpoint hit", req.body); 
   const { debtorId, paidMonths, paidDate, amount } = req.body;
 
   const debtor = await Debtor.findOne({ id: debtorId });
   if (!debtor) return res.status(404).json({ message: "Debtor not found" });
 
-  // Save as one record containing all months
-  debtor.interestPaidMonths.push({
-    months: paidMonths, // store the array directly
-    date: paidDate,
-    amount
+  paidMonths.forEach(month => {
+    debtor.interestPaidMonths.push({ month, date: paidDate, amount });
   });
 
   await debtor.save();
   res.status(200).json({ message: "Interest recorded successfully" });
 };
-
 
 
 
